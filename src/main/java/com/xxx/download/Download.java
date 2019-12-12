@@ -33,11 +33,11 @@ public class Download {
     }
 
     public Document download(String url, Connection.Method method, Map<String, String> data, String payload) {
-        Proxy proxy = new Proxy(Proxy.Type.SOCKS, InetSocketAddress.createUnresolved("127.0.0.1", 12345));
+        //   Proxy proxy = new Proxy(Proxy.Type.SOCKS, InetSocketAddress.createUnresolved("127.0.0.1", 12345));
 
         Connection connection = Jsoup.connect(url)
                 .headers(getHeaders())
-                .proxy(proxy)
+                //  .proxy(proxy)
                 .ignoreContentType(true)
                 .timeout(20 * 1000)
                 .method(method);
