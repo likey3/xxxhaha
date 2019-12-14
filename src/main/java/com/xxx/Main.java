@@ -5,6 +5,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.xxx.data.Letou;
 import com.xxx.data.letou.LetouData;
+import com.xxx.data.letou.letouDownload;
+import com.xxx.download.Download;
+import com.xxx.utils.JavaScriptEngine;
 import com.xxx.utils.LZString;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -19,6 +22,14 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         System.out.println("hello world");
+        JavaScriptEngine.getInstance();
+        Letou l1=new Letou();
+
+        Download download=new letouDownload();
+        download.setCommonHeader();
+        download.setCookies();
+        l1.setDownload(download);
+        l1.  setMenus();
 
         //testLzString();
         testPageParse();

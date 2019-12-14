@@ -1,7 +1,10 @@
 package com.xxx.data.letou.template;
 
+import bin.CustomResources;
 import com.alibaba.fastjson.JSONObject;
+import com.xxx.data.Letou;
 import com.xxx.data.letou.LetouData;
+import com.xxx.utils.JavaScriptEngine;
 import com.xxx.utils.LZString;
 import com.xxx.utils.dataTemplateParse.ITempplateParse;
 
@@ -34,7 +37,7 @@ public class LetouTemplate implements ITempplateParse {
 
     }
 
-    LetouData letouData = new LetouData();
+    LetouData letouData;
     //js 运行引擎
     static ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
 
@@ -43,24 +46,19 @@ public class LetouTemplate implements ITempplateParse {
 
         String json, json1, json2, json3, json4;
 
-        try {
-            Map<Properties, String> map = getTemplate();
-            engine.eval(getJavascriptParse());
-            Invocable invocable = (Invocable) engine;
-            letouData = JSONObject.parseObject(getData(), LetouData.class);
 
-            json = (String) invocable.invokeFunction("Parse", map.get(Properties.BetOptionContentTemplate), LZString.decompressFromBase64(letouData.d.get(0)));
-            json1 = (String) invocable.invokeFunction("Parse", map.get(Properties.BetOptionContentCompetitorTemplate), LZString.decompressFromBase64(letouData.d.get(1)));
-            json2 = (String) invocable.invokeFunction("Parse", map.get(Properties.BetOptionContentRateTeimlate), LZString.decompressFromBase64(letouData.d.get(2)));
-            json3 = (String) invocable.invokeFunction("Parse", map.get(Properties.BetOptionContentTournamentTemplate), LZString.decompressFromBase64(letouData.d.get(3)));
-            json4 = (String) invocable.invokeFunction("Parse", map.get(Properties.BetOptionContentGroupOptionTemplate), LZString.decompressFromBase64(letouData.d.get(4)));
-        } catch (ScriptException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
+        Map<Properties, String> map = getTemplate();
+
+
+        letouData = JSONObject.parseObject(getData(), LetouData.class);
+
+        String funcName = Letou.JS.Parse.getValue();
+        json = (String) JavaScriptEngine.execu(funcName, map.get(Properties.BetOptionContentTemplate), LZString.decompressFromBase64(letouData.d.get(0)));
+        json1 = (String) JavaScriptEngine.execu(funcName, map.get(Properties.BetOptionContentCompetitorTemplate), LZString.decompressFromBase64(letouData.d.get(1)));
+        json2 = (String) JavaScriptEngine.execu(funcName, map.get(Properties.BetOptionContentRateTeimlate), LZString.decompressFromBase64(letouData.d.get(2)));
+        json3 = (String) JavaScriptEngine.execu(funcName, map.get(Properties.BetOptionContentTournamentTemplate), LZString.decompressFromBase64(letouData.d.get(3)));
+        json4 = (String) JavaScriptEngine.execu(funcName, map.get(Properties.BetOptionContentGroupOptionTemplate), LZString.decompressFromBase64(letouData.d.get(4)));
+
 
         return "";
     }
@@ -88,38 +86,13 @@ public class LetouTemplate implements ITempplateParse {
     }
 
     /**
-     * 解析所需要的javascript函数
-     *
-     * @return
-     * @throws FileNotFoundException
-     */
-    String getJavascriptParse() throws FileNotFoundException {
-        String function = "";
-        File f = new File("E:\\WEB\\xxxhaha\\src\\main\\java\\testFile\\testFunc");
-        Long fileL = f.length();
-        byte[] filecontent = new byte[fileL.intValue()];
-
-        FileInputStream in = new FileInputStream(f);
-        try {
-            in.read(filecontent);
-
-            in.close();
-            function = new String(filecontent, "UTF-8");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return function;
-    }
-
-    /**
      * 解析所需要的数据
      *
      * @return
      */
     String getData() {
         String data = "";
-        File f = new File("E:\\WEB\\xxxhaha\\src\\main\\java\\testFile\\receiveData");
+        File f = new File("E:\\WEB\\xxxhaha\\src\\main\\java\\bin\\letou\\receiveData");
         Long fileL = f.length();
         byte[] filecontent = new byte[fileL.intValue()];
 
