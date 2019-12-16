@@ -38,7 +38,6 @@ private  static final String LeftMenuTemplates = "SportCode,OrderBy,MultiLangNam
      * @param data
      * @return
      */
-
     public static String buildMenuDataJson(String data)
     {
         data= LZString.decompressFromUTF16(data);
