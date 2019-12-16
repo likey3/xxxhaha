@@ -6,6 +6,7 @@ import com.xxx.data.letou.LetouData;
 import com.xxx.data.letou.MenuData;
 import com.xxx.data.letou.SubMenuData;
 import com.xxx.download.Download;
+import com.xxx.entity.GambleMarket;
 import com.xxx.utils.JavaScriptEngine;
 import com.xxx.utils.LZString;
 import org.jsoup.Connection;
@@ -156,5 +157,12 @@ public class Letou {
             return funcName;
         }
 
+    }
+
+    public static GambleMarket creatGambleMarket()
+    {
+        GambleMarket market=new GambleMarket();
+
+        return  market;
     }
 }
