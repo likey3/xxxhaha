@@ -4,20 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.xxx.data.Letou;
-import com.xxx.data.letou.LetouData;
+import com.xxx.data.letou.GameDataWrap;
 import com.xxx.data.letou.letouDownload;
-import com.xxx.data.letou.template.LetouTemplate;
 import com.xxx.download.Download;
 import com.xxx.utils.JavaScriptEngine;
 import com.xxx.utils.LZString;
-import com.xxx.utils.dataTemplateParse.ITempplateParse;
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import static com.alibaba.fastjson.JSON.parseObject;
 
@@ -30,8 +21,10 @@ public class Main {
 
         JavaScriptEngine.getInstance();
         Letou l1=new Letou();
-        ITempplateParse letoutem=new LetouTemplate();
-        letoutem.Parse();
+
+        GameDataWrap letoutem=new GameDataWrap();
+        letoutem.BuildGameData("");
+
         Download download=new letouDownload();
         download.setCommonHeader();
         download.setCookies();

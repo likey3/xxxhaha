@@ -1,24 +1,24 @@
-package com.xxx.data.letou.template;
+package com.xxx.data.letou;
 
-import bin.CustomResources;
 import com.alibaba.fastjson.JSONObject;
 import com.xxx.data.Letou;
-import com.xxx.data.letou.LetouData;
+import com.xxx.data.letou.OriginGameData.*;
+
+import com.xxx.entity.RaceStyle;
 import com.xxx.utils.JavaScriptEngine;
 import com.xxx.utils.LZString;
-import com.xxx.utils.dataTemplateParse.ITempplateParse;
 
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import java.io.*;
-import java.util.HashMap;
+import javax.swing.plaf.synth.Region;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import java.util.Map;
-
-public class LetouTemplate implements ITempplateParse {
-
+/**
+ * 将远端解析的数据
+ */
+public class GameDataWrap {
     static enum Properties {
         BetOptionContentTemplate("BetOptionContentTemplate"),
         BetOptionContentCompetitorTemplate("BetOptionContentCompetitorTemplate"),
@@ -37,30 +37,81 @@ public class LetouTemplate implements ITempplateParse {
 
     }
 
-    LetouData letouData;
-    //js 运行引擎
-    static ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
-
-    @Override
-    public String Parse() {
-
-        String json, json1, json2, json3, json4;
+    //解析出的数据
+   private  List<Data0>  data0s;
+    private List<Data1>  data1s;
+    private  List<Data2> data2s;
+    private List<Data3>  data3s;
+    private List<Data4>   data4s;
 
 
+   private LetouData letouData;
+
+//经转换后需要的数据
+    private List<RaceStyle> raceStyles=new ArrayList<>();
+
+    public void  BuildGameData(String str1) {
+
+        str1=getData();
         Map<Properties, String> map = getTemplate();
-
-
-        letouData = JSONObject.parseObject(getData(), LetouData.class);
-
+        letouData = JSONObject.parseObject(str1, LetouData.class);
         String funcName = Letou.JS.Parse.getValue();
-        json = (String) JavaScriptEngine.execu(funcName, map.get(Properties.BetOptionContentTemplate), LZString.decompressFromBase64(letouData.d.get(0)));
-        json1 = (String) JavaScriptEngine.execu(funcName, map.get(Properties.BetOptionContentCompetitorTemplate), LZString.decompressFromBase64(letouData.d.get(1)));
-        json2 = (String) JavaScriptEngine.execu(funcName, map.get(Properties.BetOptionContentRateTeimlate), LZString.decompressFromBase64(letouData.d.get(2)));
-        json3 = (String) JavaScriptEngine.execu(funcName, map.get(Properties.BetOptionContentTournamentTemplate), LZString.decompressFromBase64(letouData.d.get(3)));
-        json4 = (String) JavaScriptEngine.execu(funcName, map.get(Properties.BetOptionContentGroupOptionTemplate), LZString.decompressFromBase64(letouData.d.get(4)));
+
+        String[] jsons=new String[5];
+
+        long st1=System.currentTimeMillis();
+
+        //region 解析对应数据
+        letouData.d.forEach(x->{
+            int index=letouData.d.indexOf(x);
+            if ( index<5)
+            {
+                Properties type=null;
+
+                switch (index)
+                {
+                    case 0:
+                        type=Properties.BetOptionContentTemplate;
+                        break;
+                    case 1:
+                        type=Properties.BetOptionContentCompetitorTemplate;
+                        break;
+                    case 2:
+                        type=Properties.BetOptionContentRateTeimlate;
+                        break;
+                    case 3:
+                        type=Properties.BetOptionContentTournamentTemplate;
+                        break;
+                    case 4:
+                        type=Properties.BetOptionContentGroupOptionTemplate;
+                        break;
+
+                }
+                String str= LZString.decompressFromBase64(letouData.d.get(index));
+                jsons[index]=JavaScriptEngine.execu(funcName, map.get(type),str);
+            }
+        });
+
+        //endregion
+        long s2=System.currentTimeMillis();
+
+        data0s=JSONObject.parseArray(jsons[0],Data0.class);
+        data1s=JSONObject.parseArray(jsons[1],Data1.class);
+        data2s=JSONObject.parseArray(jsons[2],Data2.class);
+        data3s=JSONObject.parseArray(jsons[3],Data3.class);
+        data4s=JSONObject.parseArray(jsons[4],Data4.class);
+        long s3=System.currentTimeMillis();
+        System.out.println(s3-s2);
+
+        //该类型数据利用EventCode 标识唯一比赛
+        //region创建比赛
+        //按EventCode分组
+        Map<String,List<Data1>> groupD1=data1s.parallelStream().collect(Collectors.groupingBy(x->x.EventCode));
+        Map<String,List<Data2>> groupD2=data2s.parallelStream().collect(Collectors.groupingBy(x->x.EventCode));
 
 
-        return "";
+        System.out.println(s2-st1);
+
     }
 
     /**

@@ -48,7 +48,8 @@ public class Letou {
         //将各个子分类设置到相应的主分类下
         menus.parallelStream().forEach(x->
         {
-            subMenus.parallelStream().forEach(y->
+            //偶然发现有问题所以不能用并行
+            subMenus.forEach(y->
             {
                 if (y.SportCode.equals(x.SportCode))
                 {
@@ -162,6 +163,8 @@ public class Letou {
     public static GambleMarket creatGambleMarket()
     {
         GambleMarket market=new GambleMarket();
+
+
 
         return  market;
     }
