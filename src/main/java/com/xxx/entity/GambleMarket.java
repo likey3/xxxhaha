@@ -1,5 +1,6 @@
 package com.xxx.entity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,8 @@ import java.util.Map;
  * 盘口
  */
 public class GambleMarket {
+
+
 
 
     //新加种类时在这里添加
@@ -23,21 +26,34 @@ public class GambleMarket {
 
 
     //该盘口所具有的所有比赛
-  private Map<Categories,Map<Long,RaceStyle>> allRaces;
+  private Map<String,RaceStyle> allRaces;
 
-    public Map<Categories,Map<Long,RaceStyle>> getAllRaces() {
+    //该盘口下值得押注的比赛
+    private List<RaceStyle> winRaces;
+
+    public Map<String,RaceStyle> getAllRaces() {
         return allRaces;
 
     }
 
-    public void setAllRaces(Map<Categories, Map<Long,RaceStyle>> allRaces) {
+
+
+    public void setAllRaces( Map<String,RaceStyle> allRaces) {
         this.allRaces = allRaces;
     }
 
     //获得指定类型的比赛者
-    public Map<Long,RaceStyle> getSpecialRace(Categories type)
+    public RaceStyle getSpecialRace(String id)
     {
-        return allRaces.get(type);
+        return allRaces.get(id);
     }
 
+
+    public List<RaceStyle> getWinRaces() {
+        return winRaces;
+    }
+
+    public void setWinRaces(List<RaceStyle> winRaces) {
+        this.winRaces = winRaces;
+    }
 }

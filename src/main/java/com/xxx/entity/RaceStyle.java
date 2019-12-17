@@ -12,10 +12,15 @@ public abstract class RaceStyle {
     //参加比赛的对象
     private List<GamblingEntity> competitors;
 
+    //比赛时间
+    private Date date;
+
+    //一场比赛中可以押注对象
+    private List<GamblingEntity> winEntities=new ArrayList<>();
 
     //唯一标识该场比赛，指定域名下唯一
     //不同域名下的同一RaceStyle必须一致
-    private long ID;
+    private String ID;
 
     public RaceStyle() {
         competitors = new ArrayList<>();
@@ -29,7 +34,7 @@ public abstract class RaceStyle {
         } else {
             int index =  competitors.size();//要插入的位置
             for (int i = 0; i < competitors.size(); i++) {
-                if (competitor.getID() < competitors.get(i).getID()) {
+                if (  competitor.getID().compareTo(competitors.get(i).getID())   <0 ) {
                     index = i;
                     break;
                 }
@@ -54,11 +59,19 @@ public abstract class RaceStyle {
         return competitors.get(index);
     }
 
-    public long getID() {
+    public String getID() {
         return ID;
     }
 
-    public void setID(long ID) {
+    public void setID(String ID) {
         this.ID = ID;
+    }
+
+    public List<GamblingEntity> getWinEntities() {
+        return winEntities;
+    }
+
+    public void setWinEntities(List<GamblingEntity> winEntities) {
+        this.winEntities = winEntities;
     }
 }

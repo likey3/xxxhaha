@@ -1,24 +1,17 @@
-package com.xxx.data.letou.template;
+package com.xxx.data.letou;
 
-import bin.CustomResources;
 import com.alibaba.fastjson.JSONObject;
 import com.xxx.data.Letou;
-import com.xxx.data.letou.LetouData;
 import com.xxx.utils.JavaScriptEngine;
 import com.xxx.utils.LZString;
-import com.xxx.utils.dataTemplateParse.ITempplateParse;
 
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import java.io.*;
-import java.util.HashMap;
+import javax.swing.plaf.synth.Region;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.*;
 
-import java.util.Map;
-
-public class LetouTemplate implements ITempplateParse {
-
+public class GameData {
     static enum Properties {
         BetOptionContentTemplate("BetOptionContentTemplate"),
         BetOptionContentCompetitorTemplate("BetOptionContentCompetitorTemplate"),
@@ -38,10 +31,8 @@ public class LetouTemplate implements ITempplateParse {
     }
 
     LetouData letouData;
-    //js 运行引擎
-    static ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
 
-    @Override
+
     public String Parse() {
 
         String json, json1, json2, json3, json4;
@@ -53,13 +44,44 @@ public class LetouTemplate implements ITempplateParse {
         letouData = JSONObject.parseObject(getData(), LetouData.class);
 
         String funcName = Letou.JS.Parse.getValue();
-        json = (String) JavaScriptEngine.execu(funcName, map.get(Properties.BetOptionContentTemplate), LZString.decompressFromBase64(letouData.d.get(0)));
-        json1 = (String) JavaScriptEngine.execu(funcName, map.get(Properties.BetOptionContentCompetitorTemplate), LZString.decompressFromBase64(letouData.d.get(1)));
-        json2 = (String) JavaScriptEngine.execu(funcName, map.get(Properties.BetOptionContentRateTeimlate), LZString.decompressFromBase64(letouData.d.get(2)));
-        json3 = (String) JavaScriptEngine.execu(funcName, map.get(Properties.BetOptionContentTournamentTemplate), LZString.decompressFromBase64(letouData.d.get(3)));
-        json4 = (String) JavaScriptEngine.execu(funcName, map.get(Properties.BetOptionContentGroupOptionTemplate), LZString.decompressFromBase64(letouData.d.get(4)));
+
+        long st1=System.currentTimeMillis();
 
 
+        //region 解析对应数据
+        String[] jsons=new String[5];
+        letouData.d.parallelStream().forEach(x->{
+            int index=letouData.d.indexOf(x);
+            if ( index<5)
+            {
+                Properties type=null;
+
+                switch (index)
+                {
+                    case 0:
+                        type=Properties.BetOptionContentTemplate;
+                        break;
+                    case 1:
+                        type=Properties.BetOptionContentCompetitorTemplate;
+                        break;
+                    case 2:
+                        type=Properties.BetOptionContentRateTeimlate;
+                        break;
+                    case 3:
+                        type=Properties.BetOptionContentTournamentTemplate;
+                        break;
+                    case 4:
+                        type=Properties.BetOptionContentGroupOptionTemplate;
+                        break;
+
+                }
+                String str= LZString.decompressFromBase64(letouData.d.get(index));
+                jsons[index]=JavaScriptEngine.execu(funcName, map.get(type),str);
+            }
+        });
+        //endregion
+        long s2=System.currentTimeMillis();
+        System.out.println(s2-st1);
         return "";
     }
 

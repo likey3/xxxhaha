@@ -9,21 +9,14 @@ import java.util.Map;
  */
 public  class GamblingEntity {
 
-    //所在域名地址
-    private String webAdress;
 
     //主参加对象名称
     private String name;
 
-    //比赛时间
-    private Date date;
 
-    //参与竞争对象
-    private List<GamblingEntity> rivals;
-
-    //唯一标识该场比赛，指定域名下唯一
+    //唯一标识比赛者，指定域名下唯一
     //不同域名下的同样队伍必须一致
-    private Long ID;
+    private String ID;
 
     //假定押注时所在比赛的名次，当只有两个参赛者时，名次1为赢，2为输，
     //如果名次相同则为平
@@ -36,11 +29,11 @@ public  class GamblingEntity {
     private double betMoney;
 
 
-    public Long getID() {
+    public String getID() {
         return ID;
     }
 
-    public void setID(Long ID) {
+    public void setID(String ID) {
         this.ID = ID;
     }
 
