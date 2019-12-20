@@ -51,5 +51,15 @@ public abstract class GambleMarket {
         this.winRaces = winRaces;
     }
 
+    /**
+     * 获得需要提交的数据，由具体类实现
+     *
+     * @return
+     */
     public abstract  Map<String,String> GetBetPost();
+
+    /**
+     * 生成一致性数据实体GambleMarket 所需要的数据
+     */
+    protected abstract void creatGambleMarket();
 }

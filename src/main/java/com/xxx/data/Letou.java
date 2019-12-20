@@ -7,6 +7,7 @@ import com.xxx.data.letou.MenuData;
 import com.xxx.data.letou.SubMenuData;
 import com.xxx.download.Download;
 import com.xxx.entity.GambleMarket;
+import com.xxx.entity.RaceStyle;
 import com.xxx.utils.JavaScriptEngine;
 import com.xxx.utils.LZString;
 import org.jsoup.Connection;
@@ -14,8 +15,9 @@ import org.jsoup.nodes.Document;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public class Letou {
+public class Letou extends GambleMarket {
     public static final String JSON_LINE_SEPARATOR = "§";
     public static final String COLUMN_SEPARATOR = "`";
 
@@ -160,12 +162,16 @@ public class Letou {
 
     }
 
-    public static GambleMarket creatGambleMarket()
-    {
-        GambleMarket market=new GambleMarket();
-
-
-
-        return  market;
+    @Override
+    public Map<String, String> GetBetPost() {
+        return null;
     }
+
+    @Override
+    protected void creatGambleMarket() {
+        List<RaceStyle> styles = new ArrayList<>();
+
+    }
+
+
 }

@@ -5,6 +5,7 @@ import com.xxx.data.Letou;
 import com.xxx.data.letou.OriginGameData.*;
 
 import com.xxx.entity.RaceStyle;
+import com.xxx.service.IRaceStyle;
 import com.xxx.utils.JavaScriptEngine;
 import com.xxx.utils.LZString;
 
@@ -18,7 +19,9 @@ import java.util.stream.Collectors;
 /**
  * 将远端解析的数据
  */
-public class GameDataWrap {
+public class GameDataWrap implements IRaceStyle {
+
+
     static enum Properties {
         BetOptionContentTemplate("BetOptionContentTemplate"),
         BetOptionContentCompetitorTemplate("BetOptionContentCompetitorTemplate"),
@@ -38,57 +41,56 @@ public class GameDataWrap {
     }
 
     //解析出的数据
-   private  List<Data0>  data0s;
-    private List<Data1>  data1s;
-    private  List<Data2> data2s;
-    private List<Data3>  data3s;
-    private List<Data4>   data4s;
+    private List<Data0> data0s;
+    private List<Data1> data1s;
+    private List<Data2> data2s;
+    private List<Data3> data3s;
+    private List<Data4> data4s;
 
 
-   private LetouData letouData;
+    private LetouData letouData;
 
-//经转换后需要的数据
-    private List<RaceStyle> raceStyles=new ArrayList<>();
+    //网站的比赛数据
+    Map<String, List<Data1>> groupD1;
+    Map<String, List<Data2>> groupD2;
 
-    public void  BuildGameData(String str1) {
+    public void BuildGameData(String str1) {
 
-        str1=getData();
+        str1 = getData();
         Map<Properties, String> map = getTemplate();
         letouData = JSONObject.parseObject(str1, LetouData.class);
         String funcName = Letou.JS.Parse.getValue();
 
-        String[] jsons=new String[5];
+        String[] jsons = new String[5];
 
-        long st1=System.currentTimeMillis();
+        long st1 = System.currentTimeMillis();
 
         //region 解析对应数据
-        letouData.d.forEach(x->{
-            int index=letouData.d.indexOf(x);
-            if ( index<5)
-            {
-                Properties type=null;
+        letouData.d.forEach(x -> {
+            int index = letouData.d.indexOf(x);
+            if (index < 5) {
+                Properties type = null;
 
-                switch (index)
-                {
+                switch (index) {
                     case 0:
-                        type=Properties.BetOptionContentTemplate;
+                        type = Properties.BetOptionContentTemplate;
                         break;
                     case 1:
-                        type=Properties.BetOptionContentCompetitorTemplate;
+                        type = Properties.BetOptionContentCompetitorTemplate;
                         break;
                     case 2:
-                        type=Properties.BetOptionContentRateTeimlate;
+                        type = Properties.BetOptionContentRateTeimlate;
                         break;
                     case 3:
-                        type=Properties.BetOptionContentTournamentTemplate;
+                        type = Properties.BetOptionContentTournamentTemplate;
                         break;
                     case 4:
-                        type=Properties.BetOptionContentGroupOptionTemplate;
+                        type = Properties.BetOptionContentGroupOptionTemplate;
                         break;
 
                 }
-                String str= LZString.decompressFromBase64(letouData.d.get(index));
-                jsons[index]=JavaScriptEngine.execu(funcName, map.get(type),str);
+                String str = LZString.decompressFromBase64(letouData.d.get(index));
+                jsons[index] = JavaScriptEngine.execu(funcName, map.get(type), str);
             }
         });
 
@@ -106,11 +108,11 @@ public class GameDataWrap {
         //该类型数据利用EventCode 标识唯一比赛
         //region创建比赛
         //按EventCode分组
-        Map<String,List<Data1>> groupD1=data1s.parallelStream().collect(Collectors.groupingBy(x->x.EventCode));
-        Map<String,List<Data2>> groupD2=data2s.parallelStream().collect(Collectors.groupingBy(x->x.EventCode));
+        groupD1 = data1s.parallelStream().collect(Collectors.groupingBy(x -> x.EventCode));
+        groupD2 = data2s.parallelStream().collect(Collectors.groupingBy(x -> x.EventCode));
 
 
-        System.out.println(s2-st1);
+        System.out.println(s2 - st1);
 
     }
 
@@ -164,4 +166,21 @@ public class GameDataWrap {
     public void setLetouData(LetouData letouData) {
         this.letouData = letouData;
     }
+
+    @Override
+    public List<RaceStyle> GetRaceStyles() {
+        List<RaceStyle> styles = new ArrayList<>();
+        for (Map.Entry<String, List<Data1>> entry : groupD1.entrySet()) {
+            String key = entry.getKey();
+            List<Data1> d1s = entry.getValue();
+            List<Data2> d2s = groupD2.get(key);
+            for (Data2 d2 : d2s) {
+                RaceStyle race = new RaceStyle();
+
+            }
+
+        }
+        return styles;
+    }
+
 }
