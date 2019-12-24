@@ -1,13 +1,20 @@
 package com.xxx.data.letou;
 
 import com.alibaba.fastjson.JSONObject;
+import com.mongodb.BasicDBObject;
+import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.DBObject;
+import com.mongodb.client.FindIterable;
 import com.xxx.data.Letou;
 import com.xxx.data.letou.OriginGameData.*;
 
+import com.xxx.entity.GamblingEntity;
 import com.xxx.entity.RaceStyle;
+import com.xxx.persistance.Mongodb;
 import com.xxx.service.IRaceStyle;
 import com.xxx.utils.JavaScriptEngine;
 import com.xxx.utils.LZString;
+import org.bson.Document;
 
 import javax.swing.plaf.synth.Region;
 import java.io.File;
@@ -95,25 +102,34 @@ public class GameDataWrap implements IRaceStyle {
         });
 
         //endregion
-        long s2=System.currentTimeMillis();
+        long s2 = System.currentTimeMillis();
 
-        data0s=JSONObject.parseArray(jsons[0],Data0.class);
-        data1s=JSONObject.parseArray(jsons[1],Data1.class);
-        data2s=JSONObject.parseArray(jsons[2],Data2.class);
-        data3s=JSONObject.parseArray(jsons[3],Data3.class);
-        data4s=JSONObject.parseArray(jsons[4],Data4.class);
-        long s3=System.currentTimeMillis();
-        System.out.println(s3-s2);
+        data0s = JSONObject.parseArray(jsons[0], Data0.class);
+        data1s = JSONObject.parseArray(jsons[1], Data1.class);
+        data2s = JSONObject.parseArray(jsons[2], Data2.class);
+        data3s = JSONObject.parseArray(jsons[3], Data3.class);
+        data4s = JSONObject.parseArray(jsons[4], Data4.class);
+        long s3 = System.currentTimeMillis();
+        System.out.println(s3 - s2);
 
         //该类型数据利用EventCode 标识唯一比赛
         //region创建比赛
-        //按EventCode分组
+        //按EventCode分组，collect线程安全
         groupD1 = data1s.parallelStream().collect(Collectors.groupingBy(x -> x.EventCode));
         groupD2 = data2s.parallelStream().collect(Collectors.groupingBy(x -> x.EventCode));
 
 
         System.out.println(s2 - st1);
 
+        //得到初始的队伍信息，并存储在json字串中，建立初始队伍数据库
+        data1s.parallelStream().forEach(x -> {
+            Map<String, Object> map1 = new HashMap<>();
+            List<String> features = new ArrayList<>();
+            features.add(x.CompetitorMultiLangName);
+            map1.put("names", features);
+            Document doc = new Document(map1);
+            Mongodb.getInstance().getGambleDoc().insertOne(doc);
+        });
     }
 
     /**
@@ -174,13 +190,58 @@ public class GameDataWrap implements IRaceStyle {
             String key = entry.getKey();
             List<Data1> d1s = entry.getValue();
             List<Data2> d2s = groupD2.get(key);
+            List<GamblingEntity> entities = new ArrayList<>();
+            for (Data1 d1 : d1s) {
+                entities.add(generateEntity(d1.CompetitorMultiLangName));
+            }
+            entities.sort(Comparator.naturalOrder());
+            //解析比赛
             for (Data2 d2 : d2s) {
                 RaceStyle race = new RaceStyle();
+                race.setCompetitors(entities);
 
             }
 
         }
         return styles;
+    }
+
+    @Override
+    public GamblingEntity generateEntity(String str) {
+        BasicDBObject query = BasicDBObject.parse("{\"names\":{$elementMatch:{$eq}}}");
+        FindIterable<Document> docs = Mongodb.getInstance().getGambleDoc().find(query);
+        List<GamblingEntity> entities = new ArrayList<>();
+        for (Document doc : docs) {
+            entities.add(JSONObject.parseObject(doc.toJson(), GamblingEntity.class));
+        }
+        if (entities.size() > 1) {
+            try {
+                throw new Exception("查找出的数据结果大于1，比赛队伍应该唯一，请检查数据库");
+            } catch (Exception e) {
+                e.printStackTrace();
+
+            }
+        }
+        return entities.get(0);
+
+    }
+
+    @Override
+    public String getRaceTime(String str) {
+
+
+        ///    Mongodb.getInstance().getGambleDoc().find(query);
+        return null;
+    }
+
+    @Override
+    public RaceStyle.OddsType getOddsType(String str) {
+        return null;
+    }
+
+    @Override
+    public RaceStyle.RaceType getRaceType(String str) {
+        return null;
     }
 
 }

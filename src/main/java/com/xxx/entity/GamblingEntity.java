@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * 将gamble所需要的属性抽象出来以便比较
  */
-public  class GamblingEntity {
+public class GamblingEntity implements Comparable<GamblingEntity> {
 
 
     //主参加对象特征，用于确定是同一个参与对象
@@ -17,17 +17,32 @@ public  class GamblingEntity {
 
     //唯一标识比赛者，指定域名下唯一
     //不同域名下的同样队伍必须一致
-    private String ID;
+    private String id;
 
 
     public String getID() {
-        return ID;
+        return id;
     }
 
     public void setID(String ID) {
-        this.ID = ID;
+        this.id = ID;
     }
 
+    public List<String> getNames() {
+        return names;
+    }
+
+    public void setNames(List<String> names) {
+        this.names = names;
+    }
+
+    @Override
+    public int compareTo(GamblingEntity o) {
+        if (id.compareTo(o.id) > 0) {
+            return 1;
+        }
+        return -1;
+    }
 
     public static class BetClass {
         //假定押注时所在比赛的名次，当只有两个参赛者时，名次1为赢，2为输，

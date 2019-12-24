@@ -7,6 +7,7 @@ import com.xxx.data.Letou;
 import com.xxx.data.letou.GameDataWrap;
 import com.xxx.data.letou.letouDownload;
 import com.xxx.download.Download;
+import com.xxx.persistance.Mongodb;
 import com.xxx.utils.JavaScriptEngine;
 import com.xxx.utils.LZString;
 

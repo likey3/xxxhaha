@@ -85,6 +85,10 @@ public class RaceStyle {
 
     }
 
+    public void setCompetitors(List<GamblingEntity> competitors) {
+        this.competitors = competitors;
+    }
+
     //避免使用时赋予不适合的变量
     public void setOddsCategories(GamblingEntity entity, OddsType type, List<Double> odds) {
         if (oddsCategories == null) {
@@ -134,5 +138,7 @@ public class RaceStyle {
             winEntities.get(winEntity).put(type, bet);
         }
     }
+
+
 }
 
