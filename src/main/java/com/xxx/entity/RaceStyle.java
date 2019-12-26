@@ -7,23 +7,24 @@ import java.util.*;
  */
 public class RaceStyle {
 
+
     //所有盘口的押注类型抽象，没有时后期可以添加
     //在不同的盘口下要统一
     public static enum OddsType {
-        独赢盘_含加时("独赢盘"),
-        让分盘_含加时("让分盘"),
-        总分大小盘_含加时("总分大小盘"),
-        总进球数_大_小_含加时("总进球数"),
-        总得分_单_双_上半场("总得分"),
-        让分盘_上半场(" 让分盘"),
-        总分大小盘_上半场("总分大小盘"),
-        总得分单_双_含加时("总得分单"),
+        独赢盘_含加时("独赢盘 (含加时)"),
+        让分盘_含加时("让分盘 (含加时)"),
+        总分大小盘_含加时("总分大小盘 (含加时)"),
+        总进球数_大_小_含加时("总进球数 大/小 (含加时)"),
+        总得分_单_双_上半场("总得分 单/双 - 上半场"),
+        让分盘_上半场(" 让分盘 - 上半场"),
+        总分大小盘_上半场("总分大小盘 - 上半场"),
+        总得分单_双_含加时("总得分单/双 (含加时)"),
         T1_总得分数_含加时("T1_总得分数"),
         T2_总得分数_含加时("T2_总得分数");
 
         //可用于识别同一押注类型的特征标识，无法自动识别的人工识别
         //也可以做二次校正
-        private final List<String> features = new ArrayList<>();
+        private final Set<String> features = new HashSet<>();
 
         private OddsType(String... features) {
             for (String str : features) {
@@ -32,14 +33,58 @@ public class RaceStyle {
 
         }
 
-        public List<String> getFeatures() {
-            return features;
+        /**
+         * 将传入的特征字串识别为对应押注类型
+         *
+         * @param feature 特征字符串
+         * @return
+         */
+        public boolean isSame(String feature) {
+
+            return features.contains(feature.trim());
         }
+
     }
 
     //比赛类型，用来识别不同网站的同一比赛
     public static enum RaceType {
-        Basketball,
+        Football("足球"),
+        Basketball("篮球"),
+        ESports("电子竞技"),
+        Tennis("网球"),
+        VirtualFootball("虚拟足球"),
+        IceHockey("冰上曲棍球"),
+        Baseball("棒球"),
+        Volleyball("排球"),
+        AmericanFootball("美式足球"),
+        TableTennis("乒乓球"),
+        AustralianFootball("澳洲足球"),
+        Rugby("英式橄榄球"),
+        Five_a_side("五人制足球"),
+        Handball("手球"),
+        FloorBall("地板球"),
+        BandyBall("班迪球"),
+        Cricket("板球"),
+        WaterPolo("水球");
+
+
+        private final Set<String> features = new HashSet<>();
+
+        private RaceType(String... features) {
+            for (String str : features) {
+                this.features.add(str);
+            }
+        }
+
+        /**
+         * 将传入的特征字串识别为对应比赛类型
+         *
+         * @param feature 特征字符串
+         * @return
+         */
+        public boolean isSame(String feature) {
+            return features.contains(feature);
+        }
     }
 
     ;
@@ -47,9 +92,11 @@ public class RaceStyle {
     //参加比赛的对象
     private List<GamblingEntity> competitors;
 
-    //比赛时间
-    private Date date;
+    //比赛时间 距1970-1-1 0:00:00 所经过的毫秒数
+    private long date;
 
+    //比赛类型
+    private RaceType type;
 
     //一场比赛中可以押注对象,该对象下的下注类型及下注参量
     private Map<GamblingEntity, Map<OddsType, GamblingEntity.BetClass>> winEntities = null;
@@ -139,6 +186,12 @@ public class RaceStyle {
         }
     }
 
+    public RaceType getRaceType() {
+        return type;
+    }
 
+    public void setRaceType(RaceType type) {
+        this.type = type;
+    }
 }
 

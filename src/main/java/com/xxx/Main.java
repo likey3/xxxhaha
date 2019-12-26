@@ -7,19 +7,27 @@ import com.xxx.data.Letou;
 import com.xxx.data.letou.GameDataWrap;
 import com.xxx.data.letou.letouDownload;
 import com.xxx.download.Download;
+import com.xxx.log.Log4jAssist;
 import com.xxx.persistance.Mongodb;
 import com.xxx.utils.JavaScriptEngine;
 import com.xxx.utils.LZString;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
 
 import static com.alibaba.fastjson.JSON.parseObject;
 
 public class Main {
 
-
+    private static Logger logger = LogManager.getLogger(Main.class);
     public static void main(String[] args) throws Exception {
         System.out.println("hello world");
-
-
+        SetTest();
         JavaScriptEngine.getInstance();
         Letou l1=new Letou();
 
@@ -57,5 +65,31 @@ public class Main {
         String result = LZString.decompressFromBase64(base64String);
 
         System.out.println(result);
+    }
+
+
+    public static void SetTest() {
+        Set hs = new HashSet();
+        hs.add("低水升");
+        hs.add("高通");
+        hs.add("丹佛掘金");
+        hs.add("新奥尔良鹈鹕");
+        boolean df = hs.contains("低水升");
+        boolean df1 = hs.contains("低11水升");
+    }
+
+    public static void logTest() {
+        logger.trace("trace");
+        logger.debug("debug");
+        logger.info("info");
+        logger.warn("warn");
+        logger.error("error");
+        logger.fatal("fatal");
+        logger.log(Level.getLevel("VERBOSE"), "初始化日志输出测试");
+        logger.log(Level.getLevel("VERBOSE1"), "初始化日志输出测试1");
+        logger.log(Level.getLevel("VERBOSE2"), "初始化日志输出测试2");
+        String kk = "fadf激光顶级";
+        logger.log(Log4jAssist.GambleCheck, "查找不到押注类型，特征字串为{}", kk);
+
     }
 }

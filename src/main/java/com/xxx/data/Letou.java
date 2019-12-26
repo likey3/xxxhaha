@@ -2,6 +2,7 @@ package com.xxx.data;
 
 import bin.CustomResources;
 import com.alibaba.fastjson.JSONObject;
+import com.xxx.data.letou.GameDataWrap;
 import com.xxx.data.letou.LetouData;
 import com.xxx.data.letou.MenuData;
 import com.xxx.data.letou.SubMenuData;
@@ -28,6 +29,7 @@ public class Letou extends GambleMarket {
     //所有的运动项目
     private List<MenuData> menus;
 
+    GameDataWrap gameDataWrap = new GameDataWrap();
     public void setMenus() {
         menus = new ArrayList<>();
         Document document = download.download(menuDataUrl, Connection.Method.POST, null, "{LanguageCode: \"zh-cn\"}");
@@ -59,7 +61,7 @@ public class Letou extends GambleMarket {
                 }
             });
         });
-
+        gameDataWrap.setMenus(menus);
     }
 
     public void setDownload(Download ldown) {

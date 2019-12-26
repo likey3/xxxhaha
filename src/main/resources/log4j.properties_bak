@@ -1,0 +1,57 @@
+### 设置###
+###配置日志根
+log4j.rootLogger=debug,stdout,D,E
+#ERROR 为严重错误，主要是程序的错误
+#WARN 为一般警告，比如session丢失
+#INFO 为一般要显示的信息，比如登录和登出
+#DEBUG 为程序调试的信息
+
+# 子logger是否会从父级logger（上面设置的log4j.rootCategory）的appender里面输出，默认true
+# 为true 子级别的logger输出后还会在父级的logger里面输出
+# 为false log日志只会在当前级别的logger里面输出，不会在父级logger里面输出
+log4j.additivity.org.apache=true
+
+#org.apache.log4j.ConsoleAppender(控制台)
+#org.apache.log4j.FileAppender(文件)
+#org.apache.log4j.DailyRollingFileAppender(每天产生一个日志文件)
+#org.apache.log4j.RollingFileAppender(文件大小到达指定尺寸的时候产生一个新文件)
+#org.apache.log4j.writerAppender(将日志信息以流格式发送到任意指定的地方)
+
+
+### 输出信息到控制台 ###
+# 配置日志信息输出的目的地appender
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.Target=System.out
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+#org.apache.log4j.HTMLLayout(以HTML表格的形式布局)
+#org.apache.log4j.PatternLayout(可以灵活地指定布局模式)
+#org.apache.log4j.SimpleLayout(包含日志信息的级别和信息字符串)
+#org.apache.log4j.TTCCLayout(包含日志产生的时间，线程，类别等消息)
+log4j.appender.stdout.layout.ConversionPattern=[%-5p] %d{yyyy-MM-dd HH:mm:ss,SSS} method:%l%n%m%n
+#%m 输出代码中指定的消息
+#%p 输出优先级，即DEBUG，INFO，WARN，ERROR，FATAL
+#%r 输出自应用启动到输出该log信息耗费的毫秒数
+#%c 输出所属的类目，通常就是所在类的全名
+#%t 输出产生该日志的事件的线程名
+#%n 输出一个回车换行符 win \r\n unix \n
+#%d 输出日志事件点的日期或时间，默认格式为ISO8601 也可以在其后指定格式 %d{yyyy MM dd HH:mm:ss,SSS}
+#%l 输出日志事件的发生位置，包括类目名，发生的线程，以及在代码中的行数
+
+### 输出debug 级别以上的日志到日志文件 ###
+log4j.appender.D=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.D.File=debugGamble.log
+# 将消息增加到指定文件中，false指将消息覆盖指定的文件内容
+log4j.appender.D.Append=true;
+
+log4j.appender.D.Threshold=DEBUG
+log4j.appender.D.layout=org.apache.log4j.PatternLayout
+log4j.appender.D.layout.ConversionPattern=%-d{yyyy-MM-dd HH:mm:ss} [%t:%r]-[%p] %m%n
+
+### 输出ERROR 级别以上的日志到日志文件 ###
+log4j.appender.E = org.apache.log4j.DailyRollingFileAppender
+log4j.appender.E.File =errorGamble.log 
+log4j.appender.E.Append = true
+log4j.appender.E.Threshold = ERROR 
+log4j.appender.E.layout = org.apache.log4j.PatternLayout
+log4j.appender.E.layout.ConversionPattern = %-d{yyyy-MM-dd HH:mm:ss}  [ %t:%r ] - [ %p ]  %m%n
+

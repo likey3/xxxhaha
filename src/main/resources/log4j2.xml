@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <!-- Define custom levels before using them for filtering below. -->
+    <CustomLevels>
+        <CustomLevel name="DIAG" intLevel="350"/>
+        <CustomLevel name="NOTICE" intLevel="450"/>
+        <!--搜集的盘口数据信息校验-->
+        <CustomLevel name="GAMBLE_CHECK" intLevel="550"/>
+        <CustomLevel name="VERBOSE1" intLevel="549"/>
+    </CustomLevels>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %-7level %logger{36} - %msg%n"/>
+        </Console>
+        <File name="Gamble" fileName="logs/dataErr.log">
+            <MarkerFilter marker="VERBOSE" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d %-7level %logger{36} - %msg%n"/>
+        </File>
+
+        <RollingRandomAccessFile name="ErrorFile"
+                                 fileName="logs/gamble.log"
+                                 filePattern="$${date:yyyy-MM}/error-%d{yyyy-MM-dd HH-mm}-%i.log">
+            <Filters>
+                <ThresholdFilter level="VERBOSE1" onMatch="DENY" onMismatch="ACCEPT"/>
+                <ThresholdFilter level="GAMBLE_CHECK" onMatch="ACCEPT" onMismatch="DENY"/>
+
+            </Filters>
+
+
+            <PatternLayout
+                    pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+    <Loggers>
+        <Root level="trace">
+            <!-- Only events at DIAG level or more specific are sent to the console. -->
+            <AppenderRef ref="Console" level="diag"/>
+            <!--          <AppenderRef ref="Gamble" level="VERBOSE" />-->
+            <AppenderRef ref="ErrorFile" level="GAMBLE_CHECK"/>
+        </Root>
+    </Loggers>
+</Configuration>

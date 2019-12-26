@@ -21,12 +21,12 @@ public interface IRaceStyle {
     GamblingEntity generateEntity(String str);
 
     /**
-     * 获得比赛时间，并归一化为标准格式
-     *
+     * 获得比赛时间，并归一化为标准格式,以格林威治时间为标准
+     *1970-1-1 0:00:00
      * @param str
      * @return
      */
-    String getRaceTime(String str);
+    long getRaceTime(String str);
 
     /**
      * 获得押注类型 归一化格式
